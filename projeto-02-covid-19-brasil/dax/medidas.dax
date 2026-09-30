@@ -1,0 +1,53 @@
+// ==========================================
+// KPIs - COVID-19 Brasil
+// ==========================================
+
+Total Casos = SUM(Covid[casos])
+
+Total Obitos = SUM(Covid[obitos])
+
+Casos Acumulados =
+CALCULATE(
+    SUM(Covid[casos]),
+    FILTER(ALL(Data), Data[Data] <= MAX(Data[Data]))
+)
+
+Obitos Acumulados =
+CALCULATE(
+    SUM(Covid[obitos]),
+    FILTER(ALL(Data), Data[Data] <= MAX(Data[Data]))
+)
+
+Media Movel 7 Dias Casos =
+AVERAGEX(
+    DATESINPERIOD(Data[Data], LASTDATE(Data[Data]), -7, DAY),
+    CALCULATE(SUM(Covid[casos]))
+)
+
+Media Movel 7 Dias Obitos =
+AVERAGEX(
+    DATESINPERIOD(Data[Data], LASTDATE(Data[Data]), -7, DAY),
+    CALCULATE(SUM(Covid[obitos]))
+)
+
+Taxa de Letalidade =
+DIVIDE([Total Obitos], [Total Casos], 0)
+
+Doses Aplicadas =
+SUM(Vacina[doses_1]) + SUM(Vacina[doses_2]) + SUM(Vacina[doses_reforco])
+
+Cobertura Vacinal 1a Dose =
+DIVIDE(SUM(Vacina[doses_1]), SUM(Populacao[total]), 0)
+
+Cobertura Vacinal 2a Dose =
+DIVIDE(SUM(Vacina[doses_2]), SUM(Populacao[total]), 0)
+
+Variacao Semanal =
+VAR AtualSemana = [Casos Acumulados]
+VAR SemanaAnterior =
+    CALCULATE([Casos Acumulados], DATEADD(Data[Data], -7, DAY))
+RETURN
+    DIVIDE(AtualSemana - SemanaAnterior, SemanaAnterior, 0)
+
+Indice de Isolamento Efetivo =
+DIVIDE([Taxa de Letalidade], [Cobertura Vacinal 2a Dose], 0)
