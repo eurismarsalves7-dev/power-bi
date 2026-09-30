@@ -1,0 +1,11 @@
+# Dados brutos
+data/*_raw.csv
+
+# Ambiente
+.venv/
+__pycache__/
+*.pyc
+
+# Power BI temporários
+~$*.pbix
+*.pbix.bak
