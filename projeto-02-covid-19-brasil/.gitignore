@@ -1,0 +1,5 @@
+data/*_raw.csv
+.venv/
+__pycache__/
+*.pyc
+~$*.pbix
