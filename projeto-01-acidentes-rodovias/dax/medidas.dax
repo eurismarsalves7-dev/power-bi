@@ -1,0 +1,52 @@
+// ==========================================
+// KPIs - Acidentes de Trânsito PRF
+// ==========================================
+
+Total Acidentes = COUNTROWS(Acidentes)
+
+Total Mortos = SUM(Acidentes[mortos])
+
+Total Feridos = SUM(Acidentes[feridos])
+
+Taxa de Mortalidade =
+DIVIDE([Total Mortos], [Total Acidentes], 0)
+
+Acidentes por Km =
+DIVIDE([Total Acidentes], SUM(Rodovias[extensao_km]), 0)
+
+Media Feridos =
+AVERAGE(Acidentes[feridos])
+
+Acidentes Fim de Semana =
+CALCULATE(
+    [Total Acidentes],
+    Data[dia_semana] IN { "Sábado", "Domingo" }
+)
+
+% Acidentes Noturnos =
+DIVIDE(
+    CALCULATE(
+        [Total Acidentes],
+        Acidentes[hora] >= 18 || Acidentes[hora] < 6
+    ),
+    [Total Acidentes]
+)
+
+% Acidentes com Chuva =
+DIVIDE(
+    CALCULATE(
+        [Total Acidentes],
+        Acidentes[condicao_meteorologica] = "Chuva"
+    ),
+    [Total Acidentes]
+)
+
+Variacao Ano a Ano =
+VAR AnoAtual = [Total Acidentes]
+VAR AnoAnterior =
+    CALCULATE([Total Acidentes], SAMEPERIODLASTYEAR(Data[data]))
+RETURN
+    DIVIDE(AnoAtual - AnoAnterior, AnoAnterior, 0)
+
+Ranking UF =
+RANKX(ALL(Local[uf]), [Total Acidentes], , DESC)
